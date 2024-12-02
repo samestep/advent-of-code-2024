@@ -10,13 +10,12 @@ fn safe(levels: impl IntoIterator<Item = isize>) -> bool {
     let mut previous: Option<isize> = None;
     for curr in levels {
         if let Some(prev) = previous {
-            let diff = curr - prev;
-            match diff.cmp(&0) {
-                Ordering::Less => decreasing = true,
+            match prev.cmp(&curr) {
+                Ordering::Less => increasing = true,
                 Ordering::Equal => return false,
-                Ordering::Greater => increasing = true,
+                Ordering::Greater => decreasing = true,
             }
-            if 3 < diff.abs() {
+            if 3 < prev.abs_diff(curr) {
                 return false;
             }
         }
