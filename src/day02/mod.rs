@@ -1,11 +1,14 @@
 use std::cmp::Ordering;
 
-fn safe<'a>(levels: impl IntoIterator<Item = &'a str>) -> bool {
+fn parse(line: &str) -> impl Iterator<Item = isize> + '_ {
+    line.split_whitespace().map(|level| level.parse().unwrap())
+}
+
+fn safe(levels: impl IntoIterator<Item = isize>) -> bool {
     let mut increasing = false;
     let mut decreasing = false;
     let mut previous: Option<isize> = None;
-    for level in levels {
-        let curr: isize = level.parse().unwrap();
+    for curr in levels {
         if let Some(prev) = previous {
             let diff = curr - prev;
             match diff.cmp(&0) {
@@ -23,17 +26,14 @@ fn safe<'a>(levels: impl IntoIterator<Item = &'a str>) -> bool {
 }
 
 pub fn puzzle1(input: &str) -> usize {
-    input
-        .lines()
-        .filter(|line| safe(line.split_whitespace()))
-        .count()
+    input.lines().filter(|line| safe(parse(line))).count()
 }
 
 pub fn puzzle2(input: &str) -> usize {
     input
         .lines()
         .filter(|line| {
-            let levels: Vec<&str> = line.split_whitespace().collect();
+            let levels: Vec<isize> = parse(line).collect();
             levels.iter().enumerate().any(|(i, _)| {
                 safe(levels.iter().enumerate().filter_map(
                     |(j, &level)| {

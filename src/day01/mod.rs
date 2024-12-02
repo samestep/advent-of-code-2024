@@ -1,16 +1,15 @@
 use std::collections::HashMap;
 
-use regex::Regex;
+use itertools::Itertools;
 
 fn parse(input: &str) -> (Vec<isize>, Vec<isize>) {
-    let re = Regex::new(r"(\d+)\s+(\d+)").unwrap();
     input
         .lines()
         .map(|line| {
-            let caps = re.captures(line).unwrap();
-            let l: isize = caps[1].parse().unwrap();
-            let r: isize = caps[2].parse().unwrap();
-            (l, r)
+            line.split_whitespace()
+                .map(|x| x.parse::<isize>().unwrap())
+                .collect_tuple()
+                .unwrap()
         })
         .unzip()
 }
