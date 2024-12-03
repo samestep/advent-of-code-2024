@@ -1,5 +1,6 @@
 mod day01;
 mod day02;
+mod day03;
 
 use std::{env, fs};
 
@@ -14,6 +15,9 @@ fn main() {
 
         (2, 1) => day02::puzzle1(&input).to_string(),
         (2, 2) => day02::puzzle2(&input).to_string(),
+
+        (3, 1) => day03::puzzle1(&input).to_string(),
+        (3, 2) => day03::puzzle2(&input).to_string(),
 
         _ => panic!("no puzzle {} for day {}", puzzle, day),
     };
