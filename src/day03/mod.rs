@@ -5,15 +5,15 @@ fn parse_mul(caps: Captures) -> usize {
 }
 
 pub fn puzzle1(input: &str) -> usize {
-    let re = Regex::new(r"mul\((\d+),(\d+)\)");
-    re.unwrap().captures_iter(input).map(parse_mul).sum()
+    let re = Regex::new(r"mul\((\d+),(\d+)\)").unwrap();
+    re.captures_iter(input).map(parse_mul).sum()
 }
 
 pub fn puzzle2(input: &str) -> usize {
     let mut sum = 0;
     let mut enabled = true;
-    let re = Regex::new(r"mul\((\d+),(\d+)\)|do\(\)|don't\(\)");
-    for caps in re.unwrap().captures_iter(input) {
+    let re = Regex::new(r"mul\((\d+),(\d+)\)|do\(\)|don't\(\)").unwrap();
+    for caps in re.captures_iter(input) {
         match &caps[0] {
             "do()" => enabled = true,
             "don't()" => enabled = false,
