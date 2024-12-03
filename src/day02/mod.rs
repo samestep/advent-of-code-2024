@@ -33,17 +33,8 @@ pub fn puzzle2(input: &str) -> usize {
         .lines()
         .filter(|line| {
             let levels: Vec<isize> = parse(line).collect();
-            levels.iter().enumerate().any(|(i, _)| {
-                safe(levels.iter().enumerate().filter_map(
-                    |(j, &level)| {
-                        if i == j {
-                            None
-                        } else {
-                            Some(level)
-                        }
-                    },
-                ))
-            })
+            (0..levels.len())
+                .any(|i| safe(levels[..i].iter().chain(levels[i + 1..].iter()).copied()))
         })
         .count()
 }
