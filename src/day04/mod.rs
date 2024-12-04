@@ -36,23 +36,19 @@ impl<'a> Grid<'a> {
     }
 }
 
-pub fn puzzle1(input: &str) -> usize {
+fn solve<const M: usize, const N: usize>(
+    needle: [&str; M],
+    matrix: [[(isize, isize); M]; N],
+    input: &str,
+) -> usize {
     let mut count = 0;
     let grid = Grid::new(input);
     for y in 0..(grid.height() as isize) {
         for x in 0..(grid.width() as isize) {
-            for points in [
-                [(x, y), (x + 1, y), (x + 2, y), (x + 3, y)],
-                [(x, y), (x + 1, y - 1), (x + 2, y - 2), (x + 3, y - 3)],
-                [(x, y), (x, y - 1), (x, y - 2), (x, y - 3)],
-                [(x, y), (x - 1, y - 1), (x - 2, y - 2), (x - 3, y - 3)],
-                [(x, y), (x - 1, y), (x - 2, y), (x - 3, y)],
-                [(x, y), (x - 1, y + 1), (x - 2, y + 2), (x - 3, y + 3)],
-                [(x, y), (x, y + 1), (x, y + 2), (x, y + 3)],
-                [(x, y), (x + 1, y + 1), (x + 2, y + 2), (x + 3, y + 3)],
-            ] {
-                if let Some(["X", "M", "A", "S"]) = grid.gets(points) {
-                    count += 1;
+            for points in matrix.map(|row| row.map(|(x0, y0)| (x + x0, y + y0))) {
+                match grid.gets(points) {
+                    Some(strings) if strings == needle => count += 1,
+                    _ => {}
                 }
             }
         }
@@ -60,41 +56,34 @@ pub fn puzzle1(input: &str) -> usize {
     count
 }
 
-fn add((x1, y1): (isize, isize), (x2, y2): (isize, isize)) -> (isize, isize) {
-    (x1 + x2, y1 + y2)
-}
-
-fn rotate((x, y): (isize, isize)) -> (isize, isize) {
-    (y, -x)
-}
-
-fn rotations<const N: usize>(
-    center: (isize, isize),
-    mut points: [(isize, isize); N],
-) -> [[(isize, isize); N]; 4] {
-    let mut lists = [points; 4];
-    for list in lists.iter_mut() {
-        for j in 0..N {
-            list[j] = add(center, points[j]);
-            points[j] = rotate(points[j]);
-        }
-    }
-    lists
+pub fn puzzle1(input: &str) -> usize {
+    solve(
+        ["X", "M", "A", "S"],
+        [
+            [(0, 0), (1, 0), (2, 0), (3, 0)],
+            [(0, 0), (1, -1), (2, -2), (3, -3)],
+            [(0, 0), (0, -1), (0, -2), (0, -3)],
+            [(0, 0), (-1, -1), (-2, -2), (-3, -3)],
+            [(0, 0), (-1, 0), (-2, 0), (-3, 0)],
+            [(0, 0), (-1, 1), (-2, 2), (-3, 3)],
+            [(0, 0), (0, 1), (0, 2), (0, 3)],
+            [(0, 0), (1, 1), (2, 2), (3, 3)],
+        ],
+        input,
+    )
 }
 
 pub fn puzzle2(input: &str) -> usize {
-    let mut count = 0;
-    let grid = Grid::new(input);
-    for y in 0..(grid.height() as isize) {
-        for x in 0..(grid.width() as isize) {
-            for points in rotations((x, y), [(-1, -1), (1, -1), (0, 0), (-1, 1), (1, 1)]) {
-                if let Some(["M", "S", "A", "M", "S"]) = grid.gets(points) {
-                    count += 1;
-                }
-            }
-        }
-    }
-    count
+    solve(
+        ["M", "S", "A", "M", "S"],
+        [
+            [(-1, -1), (1, -1), (0, 0), (-1, 1), (1, 1)],
+            [(-1, 1), (-1, -1), (0, 0), (1, 1), (1, -1)],
+            [(1, 1), (-1, 1), (0, 0), (1, -1), (-1, -1)],
+            [(1, -1), (1, 1), (0, 0), (-1, -1), (-1, 1)],
+        ],
+        input,
+    )
 }
 
 #[cfg(test)]
