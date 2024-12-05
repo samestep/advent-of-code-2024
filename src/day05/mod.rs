@@ -20,7 +20,7 @@ fn parse(input: &str) -> (HashSet<(usize, usize)>, &str) {
 
 fn parse_update(rules: &HashSet<(usize, usize)>, update: &str) -> (Vec<usize>, Vec<usize>) {
     let pages: Vec<usize> = update.split(',').map(|x| x.parse().unwrap()).collect();
-    let mut sorted = pages.to_vec();
+    let mut sorted = pages.clone();
     sorted.sort_by(
         |&x, &y| match (rules.contains(&(x, y)), rules.contains(&(y, x))) {
             (true, false) => Ordering::Less,
