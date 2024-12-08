@@ -24,7 +24,7 @@ impl<'a> Grid<'a> {
     }
 
     fn height(&self) -> usize {
-        self.string.len() / self.width
+        self.string.len() / (self.width + 1)
     }
 
     fn start(&self) -> (isize, isize) {
