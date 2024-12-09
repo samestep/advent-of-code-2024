@@ -39,6 +39,38 @@ pub fn puzzle1(input: &str) -> usize {
     checksum(&blocks)
 }
 
+struct Span {
+    start: usize,
+    len: usize,
+}
+
+pub fn puzzle2(input: &str) -> usize {
+    let mut blocks = Vec::<Id>::new();
+    let files: Vec<Span> = (0..)
+        .zip(input.chars().array_chunks::<2>())
+        .map(|(id, [file, free])| {
+            let len = digit_usize(file).unwrap();
+            let start = blocks.len();
+            blocks.extend(repeat_n(id, len));
+            if let Some(len) = digit_usize(free) {
+                blocks.extend(repeat_n(-1, len));
+            }
+            Span { start, len }
+        })
+        .collect();
+    for (i, file) in files.into_iter().enumerate().rev() {
+        for start in 0..file.start {
+            let span = &mut blocks[start..start + file.len];
+            if span.iter().all(|&id| id < 0) {
+                span.fill(i as Id);
+                blocks[file.start..file.start + file.len].fill(-1);
+                break;
+            }
+        }
+    }
+    checksum(&blocks)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -54,5 +86,15 @@ mod tests {
     #[test]
     fn test_puzzle1_input() {
         assert_eq!(puzzle1(INPUT), 6398608069280);
+    }
+
+    #[test]
+    fn test_puzzle2_example() {
+        assert_eq!(puzzle2(EXAMPLE), 2858);
+    }
+
+    #[test]
+    fn test_puzzle2_input() {
+        assert_eq!(puzzle2(INPUT), 6427437134372);
     }
 }
