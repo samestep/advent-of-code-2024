@@ -24,7 +24,7 @@ impl<'a> Grid<'a> {
     }
 
     fn height(&self) -> usize {
-        self.string.len() / (self.width + 1)
+        self.string.len() / (self.width() + 1)
     }
 
     fn start(&self) -> (isize, isize) {
@@ -34,10 +34,10 @@ impl<'a> Grid<'a> {
     fn get(&self, x: isize, y: isize) -> Option<&str> {
         let i: usize = y.try_into().ok()?;
         let j: usize = x.try_into().ok()?;
-        if j >= self.width {
+        if j >= self.width() {
             return None;
         }
-        let k = i * (self.width + 1) + j;
+        let k = i * (self.width() + 1) + j;
         self.string.get(k..k + 1)
     }
 }
