@@ -1,5 +1,3 @@
-use std::vec;
-
 struct Grid<'a> {
     string: &'a str,
     width: usize,
