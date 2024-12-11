@@ -1,29 +1,55 @@
-pub fn puzzle1(input: &str) -> usize {
-    let mut stones: Vec<usize> = input
-        .split_whitespace()
-        .map(|stone| stone.parse().unwrap())
-        .collect();
-    for _ in 0..25 {
-        stones = stones
-            .into_iter()
-            .flat_map(|stone| {
-                if stone == 0 {
-                    return vec![1];
-                }
-                let digits = stone.to_string();
-                if digits.len() % 2 == 0 {
-                    let half = digits.len() / 2;
-                    vec![
-                        digits[..half].parse().unwrap(),
-                        digits[half..].parse().unwrap(),
-                    ]
-                } else {
-                    vec![stone * 2024]
-                }
-            })
-            .collect();
+use std::collections::HashMap;
+
+type Stones = HashMap<usize, usize>;
+
+fn parse(input: &str) -> Stones {
+    let mut stones = Stones::new();
+    for stone in input.split_whitespace() {
+        let x = stone.parse().unwrap();
+        *stones.entry(x).or_default() += 1;
     }
-    stones.len()
+    stones
+}
+
+fn rules(stone: usize, mut f: impl FnMut(usize)) {
+    let digits = stone.to_string();
+    if stone == 0 {
+        f(1);
+    } else if digits.len() % 2 == 0 {
+        let half = digits.len() / 2;
+        f(digits[..half].parse().unwrap());
+        f(digits[half..].parse().unwrap());
+    } else {
+        f(stone * 2024);
+    }
+}
+
+fn blink(stones: &Stones) -> Stones {
+    let mut after = Stones::new();
+    for (&x, &n) in stones {
+        rules(x, |y| *after.entry(y).or_default() += n);
+    }
+    after
+}
+
+fn count(stones: &Stones) -> usize {
+    stones.values().sum()
+}
+
+pub fn puzzle1(input: &str) -> usize {
+    let mut stones = parse(input);
+    for _ in 0..25 {
+        stones = blink(&stones);
+    }
+    count(&stones)
+}
+
+pub fn puzzle2(input: &str) -> usize {
+    let mut stones = parse(input);
+    for _ in 0..75 {
+        stones = blink(&stones);
+    }
+    count(&stones)
 }
 
 #[cfg(test)]
@@ -41,5 +67,15 @@ mod tests {
     #[test]
     fn test_puzzle1_input() {
         assert_eq!(puzzle1(INPUT), 198089);
+    }
+
+    #[test]
+    fn test_puzzle2_example() {
+        assert_eq!(puzzle2(EXAMPLE), 65601038650482);
+    }
+
+    #[test]
+    fn test_puzzle2_input() {
+        assert_eq!(puzzle2(INPUT), 236302670835517);
     }
 }
